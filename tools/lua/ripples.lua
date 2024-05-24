@@ -2,7 +2,7 @@ local DENSITY = 12
 local MAX_RADIUS = 1
 local TIME_SCALE = 1
 
-require "lua/hash-noise"
+require "lua/noise/hash"
 
 
 function calculateRipples(uv, time)
