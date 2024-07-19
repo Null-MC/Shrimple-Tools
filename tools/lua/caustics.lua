@@ -8,8 +8,8 @@ local TIME_SEED = 137.761
 local TIME_SCALE = 8
 
 require "lua/rgb"
-require "lua/hash-noise"
-require "lua/value-noise"
+require "lua/noise/hash"
+require "lua/noise/value"
 
 
 function WorleyNoise2D(coord, size, seed)
