@@ -1,10 +1,10 @@
-local VALUE_SEED = 46.19
-local VALUE_OCTAVES = 2
-local VALUE_SCALE = vec(8, 4, 8)
+local VALUE_SEED = 761.438
+local VALUE_OCTAVES = 6
+local VALUE_SCALE = vec(32, 8, 32)
 
-local WORLEY_SEED = 23.84
-local WORLEY_OCTAVES = 6
-local WORLEY_SCALE = vec(12, 4, 12)
+local WORLEY_SEED = 137.836
+local WORLEY_OCTAVES = 2
+local WORLEY_SCALE = vec(16, 8, 16)
 
 require "lua/noise/hash"
 require "lua/noise/value"
@@ -12,7 +12,7 @@ require "lua/noise/worley"
 
 
 function ValueNoiseFBM(coord, scale, octave_count)
-    local amplitude = 0.5
+    local amplitude = 1.0
     local value = 0.0
     local max = 0.0
     
@@ -28,7 +28,7 @@ function ValueNoiseFBM(coord, scale, octave_count)
 end
 
 function WorleyNoiseFBM(coord, scale, octave_count)
-    local amplitude = 0.5
+    local amplitude = 1.0
     local value = 0.0
     local max = 0.0
 
@@ -43,16 +43,14 @@ function WorleyNoiseFBM(coord, scale, octave_count)
     return value / max
 end
 
+function remap(value, fromMin, fromMax, toMin, toMax)
+    local norm = (value - fromMin) / (fromMax - fromMin)
+    return toMin + norm * (toMax - toMin)
+end
+
 function processTexel(x, y, z)
     local pos = vec(x, y, z)
-
-    local value_noise_x = ValueNoiseFBM(pos, VALUE_SCALE, VALUE_OCTAVES)
-    local value_noise_y = ValueNoiseFBM(pos, VALUE_SCALE, VALUE_OCTAVES)
-
-    pos.x = pos.x + value_noise_x * 0.2
-    pos.y = pos.y + value_noise_y * 0.2
-
-    local worley_noise = WorleyNoiseFBM(pos, WORLEY_SCALE, WORLEY_OCTAVES)
-
-    return worley_noise
+    local perlin = ValueNoiseFBM(pos, VALUE_SCALE, VALUE_OCTAVES)
+    local worley = WorleyNoiseFBM(pos, WORLEY_SCALE, WORLEY_OCTAVES)
+    return remap(perlin, 1.0 - worley, 1.0, 0.0, 1.0)
 end
